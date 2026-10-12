@@ -1,0 +1,26 @@
+[package]
+name = "kovion-sideload"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Kovion's own iOS sideloader: signs and installs an IPA with a free Apple ID, no other app needed. Built on the open-source isideload library."
+
+[[bin]]
+name = "kovion-sideload"
+path = "src/main.rs"
+
+[dependencies]
+isideload = { version = "0.4.4", features = ["keyring-storage"] }
+idevice = { version = "0.1.68", default-features = false, features = ["usbmuxd", "ring"] }
+rustls = { version = "0.23", default-features = false, features = ["ring"] }
+tokio = { version = "1.40", features = ["rt-multi-thread", "macros", "io-std", "io-util"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+rootcause = "0.12"
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

@@ -1,0 +1,30 @@
+name: Build Kovion Loader
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kovion-sideload
+          path: target/release/kovion-sideload.exe
+      - name: Publish as the "latest" release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest -y --cleanup-tag 2>/dev/null || true
+          gh release create latest target/release/kovion-sideload.exe --title "Kovion Loader" \
+            --notes "Kovion's own iOS sideloader. Downloaded automatically by Kovion iTools." --latest
